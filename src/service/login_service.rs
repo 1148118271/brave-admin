@@ -18,9 +18,11 @@ use crate::util::result::ResultNoVal;
 pub async fn login(params: Json<User>) -> Json<ResultNoVal> {
     let (flag, msg) = validation(&*params);
     if !flag {
-        error!(msg)
+        return error!(msg)
     }
-    session::set("admin".to_string(), "admin".to_string());
+    let digest = md5::compute(params.password.as_ref().unwrap().as_str());
+    let md5_str = format!("{:x}", digest);
+    session::set("admin".to_string(), md5_str);
     success!()
 }
 

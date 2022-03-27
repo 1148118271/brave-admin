@@ -49,22 +49,22 @@ impl<T> ResultVal<T> {
 #[macro_export]
 macro_rules! success {
     ($msg:expr,$data:expr) => {
-        return actix_web::web::Json(crate::util::result::ResultVal::success($msg, $data))
+        actix_web::web::Json(crate::util::result::ResultVal::success($msg, $data))
     };
     ($msg:expr) => {
-        return actix_web::web::Json(crate::util::result::ResultNoVal::success($msg))
+        actix_web::web::Json(crate::util::result::ResultNoVal::success($msg))
     };
     () => {
-        return actix_web::web::Json(crate::util::result::ResultNoVal::success("成功!"))
+        actix_web::web::Json(crate::util::result::ResultNoVal::success("成功!"))
     }
 }
 
 #[macro_export]
 macro_rules! error {
+     ($msg:expr) => {
+         actix_web::web::Json(crate::util::result::ResultNoVal::error($msg))
+    };
     () => {
-        return actix_web::web::Json(crate::util::result::ResultNoVal::error("失败!"))
-    };
-    ($msg:expr) => {
-        return actix_web::web::Json(crate::util::result::ResultNoVal::error($msg))
-    };
+         actix_web::web::Json(crate::util::result::ResultNoVal::error("失败!"))
+    }
 }

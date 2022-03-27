@@ -6,6 +6,7 @@ mod session;
 mod util;
 mod service;
 
+use std::env;
 use actix_cors::Cors;
 use actix_web::{App, http, HttpResponse, HttpServer};
 
@@ -19,6 +20,8 @@ use controller:: {
 
 #[actix_web::main]
 async fn main() {
+    let args = env::args();
+    println!("{:?}", args);
     HttpServer::new(|| {
         App::new()
             .wrap(Cors::permissive())
