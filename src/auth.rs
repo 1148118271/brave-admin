@@ -1,8 +1,12 @@
 use std::future::{ready, Ready};
-
-use actix_web::{dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform}, Error, HttpResponse};
-use actix_web::http::header::HeaderValue;
+use actix_cors::Cors;
+use actix_web::{Error, HttpResponse, ResponseError};
+use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform};
+use actix_web::cookie::Expiration::Session;
+use actix_web::http::StatusCode;
 use futures_util::future::LocalBoxFuture;
+use crate::{error, session, token_error};
+use crate::util::result::ResultNoVal;
 
 pub struct Auth;
 
@@ -40,20 +44,30 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
     forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
-        //HttpResponse::Ok().body()
+        let mut flag = false;
+        println!("path => {}", req.path());
+        if req.path() == "/login" || req.path() == "/" {
+            flag = true
+        } else {
+            let headers = req.headers();
+            if let Some(v) = headers.get("token") {
+                if let Ok(v) = v.to_str() {
+                    if let Some(_) = session::get(v) {
+                        flag = true
+                    }
+                }
+            }
+        }
 
         let fut = self.service.call(req);
         Box::pin(async move {
-            // if req.path() != "/login" && req.path() != "/" {
-            //     let headers = req.headers();
-            //     let token = headers.get("token");
-            //     match token {
-            //         None => {}
-            //         Some(_) => {}
-            //     }
-            // }
             let res = fut.await?;
-            Ok(res)
+            if flag {
+                return Ok(res)
+            }
+            let e = token_error::TokenError::new();
+            let error = Error::from(e);
+            Err(error)
         })
     }
 }

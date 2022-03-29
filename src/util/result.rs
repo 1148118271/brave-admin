@@ -61,7 +61,7 @@ macro_rules! success {
 
 #[macro_export]
 macro_rules! error {
-     ($msg:expr) => {
+    ($msg:expr) => {
          actix_web::web::Json(crate::util::result::ResultNoVal::error($msg))
     };
     () => {

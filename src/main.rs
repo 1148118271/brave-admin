@@ -5,6 +5,7 @@ mod auth;
 mod session;
 mod util;
 mod service;
+mod token_error;
 
 use std::env;
 use actix_cors::Cors;
