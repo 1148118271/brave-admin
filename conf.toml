@@ -1,3 +1,6 @@
 [user]
 username = "admin"
 password = "123456"
+
+[log]
+log_file_path = "/Users/gaoxiangkang/rust/code/brave-admin/brave_admin.log"

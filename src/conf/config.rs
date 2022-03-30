@@ -1,5 +1,6 @@
 use std::fs;
 use serde::Deserialize;
+use super::log::Log;
 use crate::entity::user::User;
 
 
@@ -21,8 +22,10 @@ pub fn default() -> &'static Config {
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
-    pub user: User
+    pub user: User,
+    pub log: Log
 }
+
 
 impl Config {
     fn default() -> Self {

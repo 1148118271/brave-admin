@@ -5,7 +5,7 @@ use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Tr
 use actix_web::cookie::Expiration::Session;
 use actix_web::http::StatusCode;
 use futures_util::future::LocalBoxFuture;
-use crate::{error, session, token_error};
+use super::{session, token_error};
 use crate::util::result::ResultNoVal;
 
 pub struct Auth;
@@ -44,15 +44,17 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
     forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
+
+        log::info!("[{}] => {}", req.method(), req.path());
+
         let mut flag = false;
-        println!("path => {}", req.path());
         if req.path() == "/login" || req.path() == "/" {
             flag = true
         } else {
             let headers = req.headers();
             if let Some(v) = headers.get("token") {
                 if let Ok(v) = v.to_str() {
-                    if let Some(_) = session::get(v) {
+                    if let Some(_) = super::session::get(v) {
                         flag = true
                     }
                 }
@@ -65,7 +67,7 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
             if flag {
                 return Ok(res)
             }
-            let e = token_error::TokenError::new();
+            let e = super::token_error::TokenError::new();
             let error = Error::from(e);
             Err(error)
         })

@@ -1,32 +1,35 @@
 mod controller;
 mod entity;
-mod config;
-mod auth;
-mod session;
 mod util;
 mod service;
-mod token_error;
+mod conf;
+
 
 use std::env;
+use std::fs::{File, OpenOptions};
 use actix_cors::Cors;
 use actix_web::{App, http, HttpResponse, HttpServer};
 
 use actix_web::web::Json;
+use simplelog::{ColorChoice, CombinedLogger, Config, LevelFilter, TerminalMode, TermLogger, WriteLogger};
 
 use controller:: {
     index::index,
     login::login
 };
+use crate::conf::log::Log;
 
 
 #[actix_web::main]
 async fn main() {
-    let args = env::args();
-    println!("{:?}", args);
+    // 初始化日志
+    Log::init();
+    log::info!("启动项目.");
+    // 启动项目
     HttpServer::new(|| {
         App::new()
             .wrap(Cors::permissive())
-            .wrap(auth::Auth)
+            .wrap(conf::auth::Auth)
             .service(index)
             .service(login)
     }).bind(("0.0.0.0", 8000))

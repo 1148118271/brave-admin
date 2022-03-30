@@ -8,8 +8,10 @@
 use actix_web::dev::Response;
 use actix_web::{HttpResponse, Responder};
 use actix_web::web::Json;
+
+use crate::conf::{config, session};
 use crate::entity::user::User;
-use crate::{config, error, session, success};
+use crate::{error, success};
 use crate::util::result::ResultNoVal;
 
 
