@@ -8,8 +8,6 @@ pub struct ResultNoVal {
     pub msg: String,
 }
 
-
-
 impl ResultNoVal  {
     pub fn success(msg: &str) -> Self {
         ResultNoVal {
@@ -46,6 +44,14 @@ impl<T> ResultVal<T> {
     }
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ResultPage<T> {
+    pub total: usize,
+    pub code: u16,
+    pub msg: String,
+    pub data: Vec<T>
+}
+
 #[macro_export]
 macro_rules! success {
     ($msg:expr,$data:expr) => {
@@ -68,3 +74,4 @@ macro_rules! error {
          actix_web::web::Json(crate::util::result::ResultNoVal::error("失败!"))
     }
 }
+

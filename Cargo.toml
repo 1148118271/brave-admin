@@ -14,3 +14,5 @@ futures-util = { version = "0.3.7", default-features = false, features = ["std"]
 md5 = "0.7.0"
 simplelog = "0.11"
 log = "0.4"
+rbson = "2.0"
+rbatis = { version = "3.1", default-features = false, features = ["mysql", "runtime-actix-native-tls"] }

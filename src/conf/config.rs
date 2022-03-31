@@ -23,9 +23,14 @@ pub fn default() -> &'static Config {
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub user: User,
-    pub log: Log
+    pub log: Log,
+    pub database: Database
 }
 
+#[derive(Deserialize, Debug)]
+pub struct Database {
+    pub url: String
+}
 
 impl Config {
     fn default() -> Self {
