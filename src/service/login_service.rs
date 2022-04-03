@@ -17,15 +17,17 @@ use crate::util::result::ResultNoVal;
 
 
 /// 登录
-pub async fn login(params: Json<User>) -> Json<ResultNoVal> {
+pub async fn login(params: Json<User>) -> HttpResponse {
     let (flag, msg) = validation(&*params);
+    let mut builder = HttpResponse::Ok();
     if !flag {
-        return error!(msg)
+        return builder.json(error!(msg))
     }
     let digest = md5::compute(params.password.as_ref().unwrap().as_str());
     let md5_str = format!("{:x}", digest);
-    session::set("admin".to_string(), md5_str);
-    success!()
+    session::set(md5_str.clone(), "admin".to_string());
+    builder.append_header(("token", md5_str));
+    builder.json(success!())
 }
 
 /// 验证账号密码
@@ -47,5 +49,5 @@ fn validation<'a>(user: &User) -> (bool, &'a str) {
     if l_password.as_ref().unwrap() != password.as_ref().unwrap() {
         return (false, "用户名或密码不匹配!")
     }
-    return (true, "")
+    (true, "")
 }

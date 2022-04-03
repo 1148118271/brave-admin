@@ -11,13 +11,14 @@ use actix_cors::Cors;
 use actix_web::{App, http, HttpResponse, HttpServer};
 
 use actix_web::web::Json;
-use simplelog::{ColorChoice, CombinedLogger, Config, LevelFilter, TerminalMode, TermLogger, WriteLogger};
+use rbatis::log::LogPlugin;
 
 use controller:: {
     index::index,
     login::login
 };
 use crate::conf::log::Log;
+use crate::controller::blog::get_blog_info;
 
 
 #[actix_web::main]
@@ -32,6 +33,7 @@ async fn main() {
             .wrap(conf::auth::Auth)
             .service(index)
             .service(login)
+            .service(get_blog_info)
     }).bind(("0.0.0.0", 8000))
         .expect("项目启动失败!")
         .run()

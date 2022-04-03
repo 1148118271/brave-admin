@@ -14,13 +14,5 @@ use crate::conf::{config, session};
 /// post
 #[post("/login")]
 pub async fn login(params: Json<User>) -> HttpResponse {
-    let json = login_service::login(params).await;
-    let mut builder = HttpResponse::Ok();
-    if json.code == 200 {
-        let config = config::default();
-        let username = &config.user.username;
-        let session = session::get(username.as_ref().unwrap()).expect("session 异常!");
-        builder.append_header(("token", session.as_str()));
-    }
-    builder.json(json)
+    login_service::login(params).await
 }
