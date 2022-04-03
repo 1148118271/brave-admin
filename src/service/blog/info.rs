@@ -1,7 +1,10 @@
+/// 博客基本信息 service
+/// 2022-04-03 22:45:34
+
 use actix_web::web::Json;
 use serde_json::{json, Value};
 use crate::entity::blog_info::BlogInfo;
-use crate::{get_blog_info, get_page, success, value};
+use crate::{get_page, success, value};
 use crate::entity::blog_comments::BlogComments;
 use crate::entity::blog_label::BlogLabel;
 use crate::util::result::{ResultNoVal, ResultVal};
@@ -32,7 +35,7 @@ pub async fn blog_info(params: Json<Value>) -> Json<ResultVal<Value>> {
 }
 
 /// 组装博客列表数据
-pub async fn assembly_blog_info(result: &mut Value, blog_infos: Vec<BlogInfo>) {
+async fn assembly_blog_info(result: &mut Value, blog_infos: Vec<BlogInfo>) {
     let mut vs = vec![];
     for b in blog_infos {
         let mut v = value! {

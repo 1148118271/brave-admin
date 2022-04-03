@@ -22,6 +22,8 @@ pub struct BlogLabel {
 }
 
 impl BlogLabel {
+
+    /// 根据标签标识获取标签详情
     pub async fn get_blog_label_by_key(key: &str) -> Option<Self> {
         let mysql = mysql::default().await;
         let result: rbatis::Result<Option<Self>> = mysql.fetch_by_column("label_key", key).await;
@@ -30,6 +32,19 @@ impl BlogLabel {
             Err(e) => {
                 log::error!("查询博客标签异常,异常信息: {}", e);
                 None
+            }
+        }
+    }
+
+    /// 获取标签列表
+    pub async fn get_label_list() -> Vec<Self> {
+        let mysql = mysql::default().await;
+        let result: rbatis::Result<Vec<Self>> = mysql.fetch_list().await;
+        match result {
+            Ok(v) => v,
+            Err(e) => {
+                log::error!("查询博客标签列表异常,异常信息: {}", e);
+                vec![]
             }
         }
     }

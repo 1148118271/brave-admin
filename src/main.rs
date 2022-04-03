@@ -9,16 +9,14 @@ use std::env;
 use std::fs::{File, OpenOptions};
 use actix_cors::Cors;
 use actix_web::{App, http, HttpResponse, HttpServer};
-
 use actix_web::web::Json;
 use rbatis::log::LogPlugin;
-
-use controller:: {
-    index::index,
-    login::login
-};
 use crate::conf::log::Log;
-use crate::controller::blog::get_blog_info;
+use crate::controller::{
+    blog,
+    index,
+    login
+};
 
 
 #[actix_web::main]
@@ -31,9 +29,10 @@ async fn main() {
         App::new()
             .wrap(Cors::permissive())
             .wrap(conf::auth::Auth)
-            .service(index)
-            .service(login)
-            .service(get_blog_info)
+            .service(index::index)
+            .service(login::login)
+            .service(blog::info::get_blog_info)
+            .service(blog::label::get_label_select_list)
     }).bind(("0.0.0.0", 8000))
         .expect("项目启动失败!")
         .run()
