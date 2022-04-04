@@ -54,4 +54,11 @@ impl BlogInfo {
         let mysql = mysql::default().await;
         mysql.save(&b, &[Skip::Column("id")]).await
     }
+
+
+    /// 根据id删除
+    pub async fn blog_info_del(id: u64) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.remove_by_column::<Self, u64>("id", id).await
+    }
 }

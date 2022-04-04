@@ -11,6 +11,15 @@ use crate::entity::blog_label::BlogLabel;
 use crate::util::result::{ResultNoVal, ResultVal};
 
 
+/// 删除博客信息
+pub async fn blog_info_del(id: u64) -> Json<ResultNoVal> {
+    if let Err(e) = BlogInfo::blog_info_del(id).await {
+        log::error!("删除博客信息异常,异常信息为:{}", e);
+        return error!("删除异常")
+    }
+    success!("删除成功")
+}
+
 /// 新增博客信息
 pub async fn blog_info_add(mut params: Json<BlogInfo>) -> Json<ResultNoVal> {
     // 是否发布 默认为否
@@ -36,23 +45,23 @@ pub async fn blog_info(params: Json<Value>) -> Json<ResultVal<Value>> {
     let (current, page_size) = get_page!(&params);
     let mut rpage = value! {};
     // 当前页数
-    rpage["current_size"] = Value::from(current);
+    rpage["currentPage"] = Value::from(current);
     // 每页条数
-    rpage["page_size"] = Value::from(page_size);
+    rpage["pageSize"] = Value::from(page_size);
 
     let blog_info = BlogInfo::get_blog_info(current, page_size).await;
     if blog_info.is_none() {
         // 查询结果为空的话总条数为0
         rpage["total"] = Value::from(0);
-        return success!("成功", value! {})
+        return success!("查询成功", value! {})
     }
 
     let page = blog_info.unwrap();
     // 总条数
-    rpage["total"] = Value::from(page.pages);
+    rpage["total"] = Value::from(page.total);
     result["page"] = Value::from(rpage);
     assembly_blog_info(&mut result, page.records).await;
-    return success!("成功", result)
+    return success!("查询成功", result)
 }
 
 /// 组装博客列表数据
