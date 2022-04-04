@@ -1,7 +1,6 @@
 use actix_web::{error::ResponseError, HttpResponse};
 use std::fmt::{Display, Formatter};
-use actix_cors::Cors;
-use actix_web::http::{header, StatusCode};
+use actix_web::http::header;
 use actix_web::http::header::HeaderValue;
 use crate::util::result::ResultNoVal;
 

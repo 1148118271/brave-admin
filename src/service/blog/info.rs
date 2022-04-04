@@ -1,13 +1,34 @@
 /// 博客基本信息 service
 /// 2022-04-03 22:45:34
 
-use actix_web::web::Json;
-use serde_json::{json, Value};
+use actix_web::web::{Json, Form};
+use rbatis::DateTimeNative;
+use serde_json::Value;
 use crate::entity::blog_info::BlogInfo;
-use crate::{get_page, success, value};
+use crate::{error, get_page, success, value};
 use crate::entity::blog_comments::BlogComments;
 use crate::entity::blog_label::BlogLabel;
 use crate::util::result::{ResultNoVal, ResultVal};
+
+
+/// 新增博客信息
+pub async fn blog_info_add(mut params: Json<BlogInfo>) -> Json<ResultNoVal> {
+    // 是否发布 默认为否
+    params.is_publish = Some("0".to_string());
+    // 阅读次数
+    params.read_count = Some(0);
+    // 创建时间
+    params.create_time = Some(DateTimeNative::now());
+    // 修改时间
+    params.update_time = Some(DateTimeNative::now());
+
+    if let Err(e) = BlogInfo::blog_info_add(params.into_inner()).await {
+        log::error!("博客信息新增异常, 异常信息为: {}", e);
+        return error!("保存异常")
+    }
+    success!("保存成功")
+}
+
 
 /// 获取博客列表
 pub async fn blog_info(params: Json<Value>) -> Json<ResultVal<Value>> {
@@ -39,11 +60,11 @@ async fn assembly_blog_info(result: &mut Value, blog_infos: Vec<BlogInfo>) {
     let mut vs = vec![];
     for b in blog_infos {
         let mut v = value! {
-            "id" => b.id,
-            "title" => b.title,
-            "is_publish" => b.is_publish,
-            "read_count" => b.read_count,
-            "comments_count" => get_blog_comments(b.id).await,
+            "id" => b.id.unwrap_or(0),
+            "title" => b.title.unwrap_or(String::new()),
+            "is_publish" => b.is_publish.unwrap_or("0".to_string()),
+            "read_count" => b.read_count.unwrap_or(0),
+            "comments_count" => get_blog_comments(b.id.unwrap_or(0)).await,
         };
 
         if let Some(pt) = b.publish_time {

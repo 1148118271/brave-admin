@@ -1,12 +1,7 @@
 use std::future::{ready, Ready};
-use actix_cors::Cors;
-use actix_web::{Error, HttpResponse, ResponseError};
+use actix_web::Error;
 use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform};
-use actix_web::cookie::Expiration::Session;
-use actix_web::http::StatusCode;
 use futures_util::future::LocalBoxFuture;
-use super::{session, token_error};
-use crate::util::result::ResultNoVal;
 
 pub struct Auth;
 

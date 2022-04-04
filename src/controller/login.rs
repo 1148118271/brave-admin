@@ -5,9 +5,7 @@
 use actix_web::{HttpResponse, post};
 use actix_web::web::Json;
 use crate::entity::user::User;
-use crate::util::result::ResultNoVal;
 use crate::service::login_service;
-use crate::conf::{config, session};
 
 
 /// 登录

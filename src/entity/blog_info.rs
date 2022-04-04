@@ -1,5 +1,6 @@
-use rbatis::crud::CRUD;
+use rbatis::crud::{CRUD, Skip};
 use rbatis::{DateTimeNative, Page, PageRequest};
+use rbatis::db::DBExecResult;
 use serde::{Deserialize, Serialize};
 use crate::conf::mysql;
 
@@ -9,17 +10,17 @@ use crate::conf::mysql;
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BlogInfo {
     /// 主键
-    pub id: u64,
+    pub id: Option<u64>,
     /// 标题
-    pub title: String,
+    pub title: Option<String>,
     /// 标签
     pub label_key: Option<String>,
     /// 是否发布 是[`1`] 否[`0`]
-    pub is_publish: String,
+    pub is_publish: Option<String>,
     /// 发表时间
     pub publish_time: Option<DateTimeNative>,
     /// 阅读次数
-    pub read_count: u64,
+    pub read_count: Option<u64>,
     /// 创建时间
     pub create_time: Option<DateTimeNative>,
     /// 修改时间
@@ -45,5 +46,12 @@ impl BlogInfo {
                 None
             }
         }
+    }
+
+
+    /// 新增博客信息
+    pub async fn blog_info_add(b :BlogInfo) -> rbatis::Result<DBExecResult> {
+        let mysql = mysql::default().await;
+        mysql.save(&b, &[Skip::Column("id")]).await
     }
 }

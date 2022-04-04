@@ -1,4 +1,3 @@
-use rbatis::crud::CRUD;
 use rbatis::DateTimeNative;
 use rbson::Bson;
 use serde::{Deserialize, Serialize};

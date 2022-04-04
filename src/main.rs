@@ -5,12 +5,8 @@ mod service;
 mod conf;
 
 
-use std::env;
-use std::fs::{File, OpenOptions};
 use actix_cors::Cors;
-use actix_web::{App, http, HttpResponse, HttpServer};
-use actix_web::web::Json;
-use rbatis::log::LogPlugin;
+use actix_web::{App, HttpServer};
 use crate::conf::log::Log;
 use crate::controller::{
     blog,
@@ -32,6 +28,7 @@ async fn main() {
             .service(index::index)
             .service(login::login)
             .service(blog::info::get_blog_info)
+            .service(blog::info::add_blog_info)
             .service(blog::label::get_label_select_list)
     }).bind(("0.0.0.0", 8000))
         .expect("项目启动失败!")
