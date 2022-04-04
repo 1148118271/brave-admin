@@ -29,6 +29,7 @@ async fn main() {
             .service(login::login)
             .service(blog::info::get_blog_info)
             .service(blog::info::add_blog_info)
+            .service(blog::info::del_blog_info)
             .service(blog::label::get_label_select_list)
     }).bind(("0.0.0.0", 8000))
         .expect("项目启动失败!")
