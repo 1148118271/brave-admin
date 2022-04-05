@@ -1,4 +1,5 @@
 pub mod result;
+pub mod multipart_file;
 
 
 /// 根据 [`Json(Value)`] 获取当前页数和每页条数
@@ -64,4 +65,16 @@ macro_rules! value {
             $val[$k] = serde_json::Value::from($v);
          )*
     }
+}
+
+
+#[macro_export]
+macro_rules! os_path {
+    ($($x:expr),*) => {{
+        let mut buf = std::path::PathBuf::new();
+        $(
+            buf = buf.join(std::path::Path::new($x));
+        )*
+        buf.into_os_string().into_string().unwrap()
+    }};
 }

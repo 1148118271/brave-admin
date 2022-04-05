@@ -8,11 +8,7 @@ mod conf;
 use actix_cors::Cors;
 use actix_web::{App, HttpServer};
 use crate::conf::log::Log;
-use crate::controller::{
-    blog,
-    index,
-    login
-};
+use crate::controller::{blog, file, index, login};
 
 
 #[actix_web::main]
@@ -27,6 +23,7 @@ async fn main() {
             .wrap(conf::auth::Auth)
             .service(index::index)
             .service(login::login)
+            .service(file::file_upload)
             .service(blog::info::get_blog_info)
             .service(blog::info::add_blog_info)
             .service(blog::info::del_blog_info)

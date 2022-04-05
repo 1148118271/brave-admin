@@ -55,16 +55,19 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
                 }
             }
         }
-
+        if !flag {
+            log::info!("登录状态异常.");
+            return Box::pin(async move {
+                let e = super::token_error::TokenError::new();
+                let error = Error::from(e);
+                Err(error)
+            })
+        }
         let fut = self.service.call(req);
+
         Box::pin(async move {
             let res = fut.await?;
-            if flag {
-                return Ok(res)
-            }
-            let e = super::token_error::TokenError::new();
-            let error = Error::from(e);
-            Err(error)
+            return Ok(res)
         })
     }
 }
