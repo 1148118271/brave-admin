@@ -2,6 +2,7 @@ use std::future::{ready, Ready};
 use actix_web::Error;
 use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform};
 use futures_util::future::LocalBoxFuture;
+use crate::util::constant;
 
 pub struct Auth;
 
@@ -43,7 +44,7 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
         log::info!("[{}] => {}", req.method(), req.path());
 
         let mut flag = false;
-        if req.path() == "/login" || req.path() == "/" {
+        if let Ok(()) = path_validation(req.path()) {
             flag = true
         } else {
             let headers = req.headers();
@@ -70,4 +71,23 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
             return Ok(res)
         })
     }
+}
+
+/// 拦截器是否放过该请求
+fn path_validation(path: &str) -> Result<(), ()> {
+    if path == "*" || path == "/*" {
+        return Ok(())
+    }
+    if constant::RELEASE.contains(&path) {
+        return Ok(())
+    }
+    for p in constant::RELEASE {
+        if p.contains("*") && p.contains(path) {
+            let v = format!("{}/*", path);
+            if p.contains(&v) {
+                return Ok(())
+            }
+        }
+    }
+    return Err(())
 }

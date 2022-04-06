@@ -31,8 +31,8 @@ pub async fn file_upload(path: Path<String>, mut data: Multipart) -> Json<Result
     };
 
     let config = config::default();
-    let file_storage_path = config.file.file_storage_path.to_string();
-    let file_path = os_path!(&file_storage_path, &path);
+    let file_storage_path = &config.file.file_storage_path;
+    let file_path = os_path!(file_storage_path, &path);
 
     file_service::file_upload(file_path, r.unwrap()).await
 }
