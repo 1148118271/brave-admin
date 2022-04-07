@@ -75,18 +75,17 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
 
 /// 拦截器是否放过该请求
 fn path_validation(path: &str) -> Result<(), ()> {
-    if path == "*" || path == "/*" {
-        return Ok(())
-    }
     if constant::RELEASE.contains(&path) {
         return Ok(())
     }
     for p in constant::RELEASE {
-        if p.contains("*") && p.contains(path) {
-            let v = format!("{}/*", path);
-            if p.contains(&v) {
-                return Ok(())
-            }
+        let v: Vec<&str> = path.split("/").filter(|v| *v != "").collect();
+        if v.is_empty() {
+            return Err(())
+        }
+        let v = format!("{}/*", *&v[0]);
+        if p.contains(&v) {
+            return Ok(())
         }
     }
     return Err(())

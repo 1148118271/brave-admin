@@ -1,4 +1,5 @@
 /target
 /.idea
+/upload
 .DS_Store
 brave_admin.log

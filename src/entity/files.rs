@@ -29,4 +29,9 @@ impl Files {
         let mysql = mysql::default().await;
         mysql.save(&file, &[]).await
     }
+
+    pub async fn delete_by_uuid_name(uuid_name: &str) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.remove_by_column::<Self, &str>("file_uuid_name", uuid_name).await
+    }
 }

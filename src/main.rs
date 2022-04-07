@@ -24,10 +24,12 @@ async fn main() {
         App::new()
             .wrap(Cors::permissive())
             .wrap(conf::auth::Auth)
-            .service(Files::new("files/", &conf.file.file_storage_path))
+            .service(Files::new(util::constant::FILE_PATH,
+                                &conf.file.file_storage_path))
             .service(index::index)
             .service(login::login)
             .service(file::file_upload)
+            .service(file::file_delete)
             .service(blog::info::get_blog_info)
             .service(blog::info::add_blog_info)
             .service(blog::info::del_blog_info)

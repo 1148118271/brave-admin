@@ -1,7 +1,3 @@
-use std::fs::File;
-use std::io;
-use std::io::Write;
-use std::path::Path;
 use actix_multipart::Multipart;
 use actix_web::web::BytesMut;
 use futures_util::StreamExt;
@@ -53,11 +49,17 @@ impl MultipartFile {
                     let file_name = field.content_disposition();
                     let file_name = file_name.get_filename().unwrap();
 
+                    let mut uuid_name = uuid::Uuid::new_v4().to_string().replace("-", "");
+                    if file_name.contains(".") {
+                        let v: Vec<&str> = file_name.split(".").collect();
+                        uuid_name = file_name.replace(*&v[0], &uuid_name);
+                    }
+
                     mfs.push(
                         MultipartFile {
                                 file_stream: bytes.to_vec(),
                                 file_original_name: file_name.to_string(),
-                                file_uuid_name: uuid::Uuid::new_v4().to_string().replace("-", ""),
+                                file_uuid_name: uuid_name,
                                 file_type: field.content_type().to_string(),
                                 file_size: bytes.len()
                         })
@@ -85,12 +87,6 @@ impl MultipartFile {
     }
     pub fn size(&self) -> usize {
         self.file_size
-    }
-
-
-    pub fn write_all<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
-        let mut file = File::create(path)?;
-        file.write_all(&self.file_stream)
     }
 }
 

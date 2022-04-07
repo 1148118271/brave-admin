@@ -9,4 +9,4 @@ log_file_path = "/Users/gaoxiangkang/rust/code/brave-admin/brave_admin.log"
 url = "mysql://root:root@localhost:3306/blogs"
 
 [file]
-file_storage_path = "/Users/gaoxiangkang/rust/code/brave-admin/upload"
+file_storage_path = "/Users/gaoxiangkang/rust/code/brave-admin/upload/"

@@ -41,6 +41,13 @@ impl<T> ResultVal<T> {
             data
         }
     }
+    pub fn error(msg: &str, data: T) -> Self {
+        ResultVal {
+            code: 500,
+            msg: msg.to_string(),
+            data
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -66,6 +73,9 @@ macro_rules! success {
 
 #[macro_export]
 macro_rules! error {
+    ($msg:expr,$data:expr) => {
+        actix_web::web::Json(crate::util::result::ResultVal::error($msg, $data))
+    };
     ($msg:expr) => {
          actix_web::web::Json(crate::util::result::ResultNoVal::error($msg))
     };
