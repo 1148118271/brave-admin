@@ -10,7 +10,7 @@ use actix_web::web::{Json, Path};
 use serde_json::Value;
 use crate::{error, os_path};
 use crate::conf::config;
-use crate::service::file_service;
+use crate::service::files_service;
 use crate::util::multipart_file::MultipartFile;
 use crate::util::result::{ResultNoVal, ResultVal};
 
@@ -34,7 +34,7 @@ pub async fn file_upload(path: Path<String>, mut data: Multipart) -> Json<Result
     let file_storage_path = &config.file.file_storage_path;
     let file_path = os_path!(file_storage_path, &path);
 
-    file_service::file_upload(file_path, r.unwrap()).await
+    files_service::file_upload(file_path, r.unwrap()).await
 }
 
 /// 单个文件删除
@@ -44,7 +44,7 @@ pub async fn file_delete(v: Json<Value>) -> Json<ResultNoVal> {
     match value.as_str() {
         None => return error!("文件路径不能为空!"),
         Some(v) => {
-            file_service::file_delete(v.to_string()).await
+            files_service::file_delete(v.to_string()).await
         }
     }
 
