@@ -7,28 +7,28 @@
 use std::fs;
 use std::io::ErrorKind::NotFound;
 use std::io::Write;
+use actix_web::HttpResponse;
 use actix_web::web::Json;
 use rbatis::DateTimeNative;
 use crate::conf::config;
 use crate::{error, os_path, success, util};
 use crate::entity::files::Files;
 use crate::util::multipart_file::MultipartFile;
-use crate::util::result::{ResultNoVal, ResultVal};
 
 
 /// 单个文件上传
-pub async fn file_upload(file_path: String, multipart_file: MultipartFile) -> Json<ResultVal<String>> {
+pub async fn file_upload(file_path: String, multipart_file: MultipartFile) -> HttpResponse {
     let file_name = multipart_file.file_uuid_name();
     let result = fs::read_dir(&file_path);
     if let Err(ref e) = result {
         if e.kind() == NotFound {
             if let Err(e) = fs::create_dir_all(&file_path) {
                 log::error!("创建文件夹异常, 异常信息为: {}", e);
-                return error!("创建文件夹异常!", String::new())
+                return error!("创建文件夹异常!")
             }
         } else {
             log::error!("读取文件夹异常, 文件夹地址为: {}, 异常信息为: {}", &file_path, e);
-            return error!("获取文件夹异常!", String::new())
+            return error!("获取文件夹异常!")
         }
     }
     let file_path = os_path!(&file_path, &file_name);
@@ -40,13 +40,13 @@ pub async fn file_upload(file_path: String, multipart_file: MultipartFile) -> Js
         Ok(f) => f,
         Err(e) => {
             log::error!("创建文件异常, 文件路劲为: {}, 异常信息为: {}", &file_path, e);
-            return error!("创建文件异常!", String::new())
+            return error!("创建文件异常!")
         }
     };
     let result = file.write_all(multipart_file.bytes());
     if let Err(e) = result {
         log::error!("保存文件异常,异常信息为: {}", e);
-        return error!("保存文件异常!", String::new())
+        return error!("保存文件异常!")
     }
 
     let config = config::default();
@@ -67,7 +67,7 @@ pub async fn file_upload(file_path: String, multipart_file: MultipartFile) -> Js
         match fs::remove_file(file_path) {
            _ => {}
         }
-        return error!("文件信息保存数据库", String::new())
+        return error!("文件信息保存数据库")
     }
     success!("上传成功", file_url)
 }
@@ -75,7 +75,7 @@ pub async fn file_upload(file_path: String, multipart_file: MultipartFile) -> Js
 
 
 /// 单个文件删除
-pub async fn file_delete(file_path: String) -> Json<ResultNoVal> {
+pub async fn file_delete(file_path: String) -> HttpResponse {
     let vec = file_path.split("/").collect::<Vec<&str>>();
     let file_uuid_name = vec[vec.len() - 1];
     if let Err(e) = db_file_delete(file_uuid_name).await {

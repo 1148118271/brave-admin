@@ -7,11 +7,9 @@
 
 use actix_web::HttpResponse;
 use actix_web::web::Json;
-
 use crate::conf::{config, session};
 use crate::entity::user::User;
-use crate::{error, success};
-
+use crate::util::result::ResultNoVal;
 
 
 /// 登录
@@ -19,13 +17,13 @@ pub async fn login(params: Json<User>) -> HttpResponse {
     let (flag, msg) = validation(&*params);
     let mut builder = HttpResponse::Ok();
     if !flag {
-        return builder.json(error!(msg))
+        return builder.json(ResultNoVal::success(msg))
     }
     let digest = md5::compute(params.password.as_ref().unwrap().as_str());
     let md5_str = format!("{:x}", digest);
     session::set(md5_str.clone(), "admin".to_string());
     builder.append_header(("token", md5_str));
-    builder.json(success!())
+    builder.json(ResultNoVal::success("登录成功"))
 }
 
 /// 验证账号密码

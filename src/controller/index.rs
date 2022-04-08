@@ -3,5 +3,5 @@ use actix_web::get;
 
 #[get("/")]
 pub async fn index() -> Json<&'static str> {
-    Json("sss")
+    Json("后台管理")
 }

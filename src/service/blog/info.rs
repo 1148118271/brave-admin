@@ -1,3 +1,4 @@
+use actix_web::HttpResponse;
 /// 博客基本信息 service
 /// 2022-04-03 22:45:34
 
@@ -8,11 +9,10 @@ use crate::entity::blog_info::BlogInfo;
 use crate::{error, get_page, success, value};
 use crate::entity::blog_comments::BlogComments;
 use crate::entity::blog_label::BlogLabel;
-use crate::util::result::{ResultNoVal, ResultVal};
 
 
 /// 删除博客信息
-pub async fn blog_info_del(id: u64) -> Json<ResultNoVal> {
+pub async fn blog_info_del(id: u64) -> HttpResponse {
     if let Err(e) = BlogInfo::blog_info_del(id).await {
         log::error!("删除博客信息异常,异常信息为:{}", e);
         return error!("删除异常")
@@ -21,7 +21,7 @@ pub async fn blog_info_del(id: u64) -> Json<ResultNoVal> {
 }
 
 /// 新增博客信息
-pub async fn blog_info_add(mut params: Json<BlogInfo>) -> Json<ResultNoVal> {
+pub async fn blog_info_add(mut params: Json<BlogInfo>) -> HttpResponse {
     // 是否发布 默认为否
     params.is_publish = Some("0".to_string());
     // 阅读次数
@@ -40,7 +40,7 @@ pub async fn blog_info_add(mut params: Json<BlogInfo>) -> Json<ResultNoVal> {
 
 
 /// 获取博客列表
-pub async fn blog_info(params: Json<Value>) -> Json<ResultVal<Value>> {
+pub async fn blog_info(params: Json<Value>) -> HttpResponse {
     let mut result = Value::default();
     let (current, page_size) = get_page!(&params);
     let mut rpage = value! {};
@@ -53,7 +53,7 @@ pub async fn blog_info(params: Json<Value>) -> Json<ResultVal<Value>> {
     if blog_info.is_none() {
         // 查询结果为空的话总条数为0
         rpage["total"] = Value::from(0);
-        return success!("查询成功", value! {})
+        return success!("查询成功")
     }
 
     let page = blog_info.unwrap();

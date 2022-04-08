@@ -41,13 +41,6 @@ impl<T> ResultVal<T> {
             data
         }
     }
-    pub fn error(msg: &str, data: T) -> Self {
-        ResultVal {
-            code: 500,
-            msg: msg.to_string(),
-            data
-        }
-    }
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -61,26 +54,38 @@ pub struct ResultPage<T> {
 #[macro_export]
 macro_rules! success {
     ($msg:expr,$data:expr) => {
-        actix_web::web::Json(crate::util::result::ResultVal::success($msg, $data))
+        {
+            let result = crate::util::result::ResultVal::success($msg, $data);
+            actix_web::HttpResponse::Ok().json(result)
+        }
     };
     ($msg:expr) => {
-        actix_web::web::Json(crate::util::result::ResultNoVal::success($msg))
+        {
+            let result = crate::util::result::ResultNoVal::success($msg);
+            actix_web::HttpResponse::Ok().json(result)
+        }
     };
     () => {
-        actix_web::web::Json(crate::util::result::ResultNoVal::success("成功!"))
+        {
+            let result = crate::util::result::ResultNoVal::success("成功!");
+            actix_web::HttpResponse::Ok().json(result)
+        }
     }
 }
 
 #[macro_export]
 macro_rules! error {
-    ($msg:expr,$data:expr) => {
-        actix_web::web::Json(crate::util::result::ResultVal::error($msg, $data))
-    };
     ($msg:expr) => {
-         actix_web::web::Json(crate::util::result::ResultNoVal::error($msg))
+        {
+            let result = crate::util::result::ResultNoVal::error($msg);
+            actix_web::HttpResponse::Ok().json(result)
+        }
     };
     () => {
-         actix_web::web::Json(crate::util::result::ResultNoVal::error("失败!"))
+        {
+            let result = crate::util::result::ResultNoVal::error("失败!");
+            actix_web::HttpResponse::Ok().json(result)
+        }
     }
 }
 
