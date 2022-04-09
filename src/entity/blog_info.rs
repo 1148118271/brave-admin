@@ -49,10 +49,30 @@ impl BlogInfo {
     }
 
 
+    /// 根据id查询
+    pub async fn get_blog_info_by_id(id: u64) -> Option<Self> {
+        let mysql = mysql::default().await;
+        let result: rbatis::Result<Option<Self>> = mysql.fetch_by_column("id", id).await;
+        match result {
+            Ok(v) => v,
+            Err(e) => {
+                log::error!("根据id查询博客信息错误, 错误信息为: {}", e);
+                None
+            }
+        }
+    }
+
     /// 新增博客信息
     pub async fn blog_info_add(b :BlogInfo) -> rbatis::Result<DBExecResult> {
         let mysql = mysql::default().await;
         mysql.save(&b, &[Skip::Column("id")]).await
+    }
+
+
+    /// 修改博客信息
+    pub async fn blog_info_edit(b :BlogInfo) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.update_by_column("id", &b).await
     }
 
 

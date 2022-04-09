@@ -14,10 +14,22 @@ pub async fn get_blog_info(params: Json<Value>) -> HttpResponse {
     info::blog_info(params).await
 }
 
+/// 根据id获取博客基本信息
+#[get("/blog/info/byId/{id}")]
+pub async fn get_blog_info_by_id(id: Path<u64>) -> HttpResponse {
+    info::blog_info_by_id(id.into_inner()).await
+}
+
 /// 博客信息新增
 #[post("/blog/info/add")]
 pub async fn add_blog_info(params: Json<BlogInfo>) -> HttpResponse {
     info::blog_info_add(params).await
+}
+
+/// 博客信息修改
+#[post("/blog/info/edit")]
+pub async fn edit_blog_info(params: Json<BlogInfo>) -> HttpResponse {
+    info::blog_info_edit(params).await
 }
 
 /// 删除博客信息

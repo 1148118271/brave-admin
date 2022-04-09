@@ -43,4 +43,10 @@ impl BlogPost {
         let mysql = mysql::default().await;
         mysql.save(&bp, &[]).await
     }
+
+    /// 修改帖子
+    pub async fn update(bp: BlogPost) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.update_by_column("id", &bp).await
+    }
 }
