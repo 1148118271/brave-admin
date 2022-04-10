@@ -49,4 +49,10 @@ impl BlogPost {
         let mysql = mysql::default().await;
         mysql.update_by_column("id", &bp).await
     }
+
+    /// 删除帖子
+    pub async fn delete_by_blog_info_id(blog_info_id: u64) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.remove_by_column::<Self, u64>("blog_info_id", blog_info_id).await
+    }
 }

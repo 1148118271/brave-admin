@@ -19,3 +19,15 @@ pub async fn get_by_blog_info_id(info_id: Path<u64>) -> HttpResponse {
 pub async fn add_or_update_post(v: Json<BlogPost>) -> HttpResponse {
     service::blog::post::add_or_update_post(v.into_inner()).await
 }
+
+/// 发布帖子
+#[get("/blog/post/publish/{blog_info_id}")]
+pub async fn publish(blog_info_id: Path<u64>) -> HttpResponse {
+    service::blog::post::publish(blog_info_id.into_inner()).await
+}
+
+/// 删除帖子
+#[get("/blog/post/del/{blog_info_id}")]
+pub async fn delete_post(blog_info_id: Path<u64>) -> HttpResponse {
+    service::blog::post::delete_post(blog_info_id.into_inner()).await
+}

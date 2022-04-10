@@ -8,7 +8,44 @@ use actix_web::HttpResponse;
 use rbatis::DateTimeNative;
 use crate::entity::blog_post::BlogPost;
 use crate::{error, success};
+use crate::entity::blog_info::BlogInfo;
 
+
+/// 发布帖子
+pub async fn publish(blog_info_id: u64) -> HttpResponse {
+    if let None = BlogPost::query_by_blog_info_id(blog_info_id).await {
+       return error!("编写帖子后才能发布!");
+    }
+    let info = BlogInfo {
+        id: Some(blog_info_id),
+        title: None,
+        label_key: None,
+        is_publish: Some(String::from("1")),
+        publish_time: Some(DateTimeNative::now()),
+        read_count: None,
+        create_time: None,
+        update_time: None
+    };
+    match BlogInfo::blog_info_edit(info).await {
+        Ok(_) => success!("发布成功!"),
+        Err(e) => {
+            log::error!("博客信息修改失败, 异常信息为: {}", e);
+            error!("发布失败!")
+        }
+    }
+}
+
+
+/// 根据博客信息id删除帖子
+pub async fn delete_post(blog_info_id: u64) -> HttpResponse {
+    match BlogPost::delete_by_blog_info_id(blog_info_id).await {
+        Ok(_) => success!("帖子删除成功!"),
+        Err(e) => {
+            log::error!("删除帖子异常, 异常信息为: {}", e);
+            error!("帖子删除失败!")
+        }
+    }
+}
 
 
 /// 根据博客信息id查询帖子
