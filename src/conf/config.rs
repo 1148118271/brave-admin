@@ -39,7 +39,7 @@ pub struct File {
 
 impl Config {
     fn default() -> Self {
-        let cv = fs::read("conf.toml").expect("配置文件读取异常!");
+        let cv = fs::read("./conf.toml").expect("配置文件读取异常!");
         toml::from_slice(cv.as_slice()).expect("配置文件解析异常!")
     }
 }

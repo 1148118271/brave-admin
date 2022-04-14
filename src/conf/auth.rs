@@ -57,7 +57,7 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
             }
         }
         if !flag {
-            log::info!("登录状态异常.");
+            log::error!("token匹配失败.");
             return Box::pin(async move {
                 let e = super::token_error::TokenError::new();
                 let error = Error::from(e);
@@ -66,9 +66,11 @@ impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
         }
         let fut = self.service.call(req);
 
+        log::info!("token匹配成功.");
+
         Box::pin(async move {
             let res = fut.await?;
-            return Ok(res)
+            Ok(res)
         })
     }
 }
