@@ -17,7 +17,7 @@ pub async fn login(params: Json<User>) -> HttpResponse {
     let (flag, msg) = validation(&*params);
     let mut builder = HttpResponse::Ok();
     if !flag {
-        return builder.json(ResultNoVal::success(msg))
+        return builder.json(ResultNoVal::error(msg))
     }
     let digest = md5::compute(params.password.as_ref().unwrap().as_str());
     let md5_str = format!("{:x}", digest);
