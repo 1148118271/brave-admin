@@ -1,5 +1,6 @@
 use rbatis::crud::CRUD;
-use rbatis::DateTimeNative;
+use rbatis::{DateTimeNative, Page, PageRequest};
+use rbatis::db::DBExecResult;
 use serde::Deserialize;
 use serde::Serialize;
 use crate::conf::mysql;
@@ -10,7 +11,7 @@ use crate::conf::mysql;
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BlogLabel {
     /// 主键
-    pub id: u64,
+    pub id: Option<u64>,
     /// 标签key
     pub label_key: String,
     /// 标签value
@@ -47,5 +48,39 @@ impl BlogLabel {
                 vec![]
             }
         }
+    }
+
+    /// 获得分页标签列表
+    pub async fn get_page_label_list(current_page: u64, page_size: u64) -> Option<Page<Self>> {
+        let mysql = mysql::default().await;
+        let wrapper = mysql.new_wrapper().order_by(false, &["create_time"]);
+        let pr = PageRequest::new(current_page, page_size);
+        let result: rbatis::Result<Page<Self>> = mysql
+            .fetch_page_by_wrapper(wrapper, &pr).await;
+        match result {
+            Ok(v) => Some(v),
+            Err(e) => {
+                log::error!("查询标签列表错误, 错误信息为: {}", e);
+                None
+            }
+        }
+    }
+
+    /// 根据id修改标签信息
+    pub async fn update(v: BlogLabel) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.update_by_column("id", &v).await
+    }
+
+    /// 新增标签信息
+    pub async fn save(v: BlogLabel) -> rbatis::Result<DBExecResult> {
+        let mysql = mysql::default().await;
+        mysql.save(&v, &[]).await
+    }
+
+    /// 删除
+    pub async fn delete(id: u64) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.remove_by_column::<Self, u64>("id", id).await
     }
 }

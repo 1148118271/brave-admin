@@ -94,7 +94,8 @@ pub async fn blog_info(params: Json<Value>) -> HttpResponse {
     if blog_info.is_none() {
         // 查询结果为空的话总条数为0
         rpage["total"] = Value::from(0);
-        return success!("查询成功")
+        result["page"] = Value::from(rpage);
+        return success!("查询成功", result)
     }
 
     let page = blog_info.unwrap();
