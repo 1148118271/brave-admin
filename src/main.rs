@@ -43,6 +43,7 @@ async fn main() {
             .service(blog::label::select_label_list)
             .service(blog::label::add_or_update)
             .service(blog::label::delete_label)
+            .service(blog::links::get_page_links)
     }).bind(("0.0.0.0", 8000))
         .expect("项目启动失败!")
         .run()
