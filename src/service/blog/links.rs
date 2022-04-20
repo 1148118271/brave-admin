@@ -7,9 +7,10 @@
 
 use actix_web::HttpResponse;
 use actix_web::web::Json;
+use rbatis::DateTimeNative;
 use serde_json::Value;
 use crate::entity::blog_links::BlogLinks;
-use crate::{get_page, success, value};
+use crate::{error, get_page, success, value};
 
 
 /// 友链分页查询
@@ -51,4 +52,40 @@ pub async fn get_page_links(params: Json<Value>) -> HttpResponse {
     }
     result["data"] = Value::Array(vec);
     success!("查询成功!", result)
+}
+
+
+/// 新增或者是修改
+pub async fn add_or_update(mut v: BlogLinks) -> HttpResponse {
+    // 修改
+    if v.id.is_some() {
+        return match BlogLinks::update(v).await {
+            Ok(_) => success!("修改成功!"),
+            Err(e) => {
+                log::error!("修改友链信息异常, 异常信息为: {}", e);
+                error!("修改异常")
+            }
+        }
+    }
+    // 新增
+    v.create_time = Some(DateTimeNative::now());
+    match BlogLinks::save(v).await {
+        Ok(_) => success!("保存成功!"),
+        Err(e) => {
+            log::error!("保存友链信息异常, 异常信息为: {}", e);
+            error!("保存失败!")
+        }
+    }
+}
+
+
+/// 删除友链
+pub async fn delete_links(id: u64) -> HttpResponse {
+    match BlogLinks::links_del(id).await {
+        Ok(_) => success!("删除成功!"),
+        Err(e) => {
+            log::error!("删除友链信息异常, 异常信息为: {}", e);
+            error!("保存失败!")
+        }
+    }
 }

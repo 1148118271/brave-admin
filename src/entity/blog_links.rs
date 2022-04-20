@@ -1,5 +1,6 @@
 use rbatis::crud::CRUD;
 use rbatis::{DateTimeNative, Page, PageRequest};
+use rbatis::db::DBExecResult;
 use serde::Deserialize;
 use serde::Serialize;
 use crate::conf::mysql;
@@ -25,7 +26,8 @@ impl BlogLinks {
     /// 获得分页友链列表
     pub async fn get_page_links_list(current_page: u64, page_size: u64) -> Option<Page<Self>> {
         let mysql = mysql::default().await;
-        let wrapper = mysql.new_wrapper().eq("flag", "1").order_by(false, &["create_time"]);
+        let wrapper = mysql.new_wrapper()
+            .order_by(false, &["create_time"]);
         let pr = PageRequest::new(current_page, page_size);
         let result: rbatis::Result<Page<Self>> = mysql
             .fetch_page_by_wrapper(wrapper, &pr).await;
@@ -36,5 +38,24 @@ impl BlogLinks {
                 None
             }
         }
+    }
+
+
+    /// 修改
+    pub async fn update(v: BlogLinks) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.update_by_column("id", &v).await
+    }
+
+    /// 新增
+    pub async fn save(v: BlogLinks) -> rbatis::Result<DBExecResult> {
+        let mysql = mysql::default().await;
+        mysql.save(&v, &[]).await
+    }
+
+    /// 删除友链信息
+    pub async fn links_del(id: u64) -> rbatis::Result<u64> {
+        let mysql = mysql::default().await;
+        mysql.remove_by_column::<Self, u64>("id", id).await
     }
 }
