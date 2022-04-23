@@ -1,3 +1,4 @@
+use rbatis::crud::CRUD;
 use rbatis::DateTimeNative;
 use rbson::Bson;
 use serde::{Deserialize, Serialize};
@@ -34,6 +35,19 @@ impl BlogComments {
             Err(e) => {
                 log::error!("查询评论列表异常,异常信息为:{}", e);
                 0
+            }
+        }
+    }
+
+    /// 根据博客id查询评论详情
+    pub async fn get_comments_by_blog_id(blog_id: u64) -> Vec<Self> {
+        let r = mysql::default().await;
+        let result = r.fetch_list_by_column("blog_id", &[blog_id]).await;
+        match result {
+            Ok(v) => v,
+            Err(e) => {
+                log::error!("根据博客id查询评论列表异常,异常信息为:{}", e);
+                vec![]
             }
         }
     }
