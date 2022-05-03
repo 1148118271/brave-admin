@@ -20,6 +20,7 @@ log = "0.4"
 chrono = "0.4"
 rbson = "2.0"
 rbatis = { version = "3.1", default-features = false, features = ["mysql", "runtime-actix-native-tls"] }
+cached-rs = { git = "https://gitee.com/gaoxiangkang/cached-rs.git" }
 [dependencies.uuid]
 version = "1.0.0-alpha.1"
 features = ["v4"]

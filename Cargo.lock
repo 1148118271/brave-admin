@@ -434,6 +434,7 @@ dependencies = [
  "actix-files",
  "actix-multipart",
  "actix-web",
+ "cached-rs",
  "chrono",
  "fern",
  "futures-util",
@@ -501,6 +502,11 @@ checksum = "90706ba19e97b90786e19dc0d5e2abd80008d99d4c0c5d1ad0b5e72cec7c494d"
 dependencies = [
  "bytes",
 ]
+
+[[package]]
+name = "cached-rs"
+version = "0.1.0"
+source = "git+https://gitee.com/gaoxiangkang/cached-rs.git#dd716d9a4831fde7a74d2474fddfe59f905c024a"
 
 [[package]]
 name = "cc"
